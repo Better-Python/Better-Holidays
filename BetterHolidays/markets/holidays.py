@@ -44,7 +44,7 @@ class CommonHoliday:
 
     def get_date(self, year: 'int'):
         return dt.date(year, self.month, self.day)
-    
+
     def __call__(self, year: 'int'):          
         day = self.get_date(year)
         if day.weekday() not in self.days:
@@ -53,16 +53,16 @@ class CommonHoliday:
 
         if self.start and day < self.start:
             return None
-      
+
         if self.end and day > self.end:
             return None
-        
-        if type(self.type) == Holiday:
+
+        if issubclass(self.type, Holiday):
             return self.type(
                 date=day,
                 name=self.name,
             )
-                
+
         elif type(self.type) == PartialTradingDay:
             return self.type(
                 date=day,
@@ -73,7 +73,7 @@ class CommonHoliday:
                 early_close_reason=self.holiday_reason,
                 late_open_reason=self.holiday_reason
             )
-        
+
         return None
 
 class NewYearsDay(CommonHoliday):
@@ -109,9 +109,17 @@ class GoodFriday(CommonHoliday):
     name = "Good Friday"
 
     def get_date(self, year: int) -> dt.date:
-        tr: 'elm.Tr' = md.HTML.from_url(f"https://www.officesimplify.com/bank-holidays-uk-{year}").inner_html.advanced_find("td", attrs={"text": "Good Friday"})[0].parent
-        day, month = tr.children[0].text.split(" ")
-        return dt.date(year, MONTHS_MAP[month], int(day[:-2]))
+        try:
+            url = f"https://www.officesimplify.com/bank-holidays-uk-{year}"
+            html = md.HTML.from_url(url)
+            elements = html.inner_html.advanced_find("td", attrs={"text": "Good Friday"})
+            if not elements:
+                raise ValueError(f"Could not find Good Friday information for {year}")
+            tr = elements[0].parent
+            day, month = tr.children[0].text.split(" ")
+            return dt.date(year, MONTHS_MAP[month], int(day[:-2]))
+        except Exception as e:  
+            raise ValueError(f"Error determining Good Friday date for {year}: {str(e)}")  
 
 class MemorialDay(CommonHoliday):
     """
@@ -122,7 +130,7 @@ class MemorialDay(CommonHoliday):
     def get_date(self, year: 'int'):
         may31 = dt.date(year, 5, 31).weekday()
         return dt.date(year, 1, 31-may31)
-    
+
 class JuneteenthNationalIndependenceDay(CommonHoliday):
     name = "Juneteenth National Independence Day"
     month = 6

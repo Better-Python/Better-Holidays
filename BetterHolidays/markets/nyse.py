@@ -6,7 +6,6 @@ from ..days import Day, Holiday, TradingDay, PartialTradingDay, NonTradingDay
 from ..const import MONTHS_MAP
 import datetime as dt
 
-
 # Standard open/close times = 9:30 - 4:00
 # * Close at 1pm
 # ** Closes at 1pm
@@ -31,10 +30,12 @@ class NYSE(Market):
 
   abnormal_days: 'dict[dt.date, Day]' = {}
 
+  standard_open_time = dt.time(hour=9, minute=30)
+  standard_close_time = dt.time(hour=16)
+
   @classproperty
   def weekdays(cls):
      return [0,1,2,3,4]
-
 
   @classmethod
   def fetch_data(cls, year: 'int'):
@@ -42,7 +43,6 @@ class NYSE(Market):
         return cls.fetch_past(year)
      else:
         return cls.fetch_future()
-     
 
   @classmethod
   def fetch_past(cls, year: 'int'):
@@ -68,14 +68,17 @@ class NYSE(Market):
          if d is None:
             continue
          yr[d.date] = d
-    
-      for day in iter_year(year):
-         if day in yr:
-            cls.cache.set(day, yr[day])
-         else:
-            cls.cache.set(day, Day(date=day))
 
-  
+      for day in iter_year(year):
+          if day in yr:
+              cls.cache.set(day, yr[day])
+          elif day in cls.abnormal_days:
+            cls.cache.set(day, cls.abnormal_days[day])
+          elif day.weekday() in cls.weekdays:
+            cls.cache.set(day, TradingDay(date=day, open_time=cls.standard_open_time, close_time=cls.standard_close_time))
+          else:
+            cls.cache.set(day, NonTradingDay(date=day))
+
   @classmethod
   def get_day_type(cls, day: dt.date) -> type[Day]:
      if day in cls.abnormal_days:
@@ -85,8 +88,6 @@ class NYSE(Market):
         return TradingDay
      else:
         return NonTradingDay
-         
-
   
   @classmethod
   def fetch_future(cls):
@@ -131,8 +132,8 @@ class NYSE(Market):
             day,
             TradingDay(
               date=day,
-              open_time=dt.time(hour=9, minute=30),
-              close_time=dt.time(hour=13)
+              open_time=cls.standard_open_time,
+              close_time=cls.standard_close_time
             )
           )
         else:

@@ -164,3 +164,7 @@ class Market(ABC):
             return None
         else:
             return cls.cache.get_or_set(date, cls.fetch_data)
+
+    @classmethod
+    def day(cls, date: dt.date) -> Day:
+        return cls.cache.get_or_set(date, cls.fetch_data)
