@@ -1,7 +1,6 @@
 import datetime as dt
-from ..days import Day, Holiday, TradingDay, PartialTradingDay
+from ..days import Day, Holiday, PartialTradingDay
 import BetterMD as md
-from BetterMD import elements as elm
 from ..const import MONTHS_MAP, DAYS_TYPE, MONDAY, THURSDAY
 
 def next_day(day: 'DAYS_TYPE', want:'DAYS_TYPE') -> 'DAYS_TYPE':
@@ -63,7 +62,7 @@ class CommonHoliday:
                 name=self.name,
             )
 
-        elif type(self.type) == PartialTradingDay:
+        elif issubclass(self.type, PartialTradingDay):
             return self.type(
                 date=day,
                 open_time=self.open_time,
@@ -88,7 +87,7 @@ class MartinLutherKingJrDay(CommonHoliday):
     name = "Martin Luther King Jr. Day"
 
     def get_date(self, year: 'int'):
-        jan21 = dt.date(year, 1, 1)
+        jan21 = dt.date(year, 1, 21)
         return jan21+dt.timedelta(days=(next_day(jan21.weekday(), MONDAY)))
 
 
@@ -129,7 +128,7 @@ class MemorialDay(CommonHoliday):
 
     def get_date(self, year: 'int'):
         may31 = dt.date(year, 5, 31).weekday()
-        return dt.date(year, 1, 31-may31)
+        return dt.date(year, 5, 31-may31)
 
 class JuneteenthNationalIndependenceDay(CommonHoliday):
     name = "Juneteenth National Independence Day"

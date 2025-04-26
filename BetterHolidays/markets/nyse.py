@@ -33,6 +33,20 @@ class NYSE(Market):
   standard_open_time = dt.time(hour=9, minute=30)
   standard_close_time = dt.time(hour=16)
 
+  holidays:'list[CommonHoliday]' = [
+      NewYearsDay([0,1,2,3,4], change={6: 1, 5: -1} ), # Saturday -> Friday, Sunday -> Monday
+      MartinLutherKingJrDay([0,1,2,3,4], change={6: 1, 5: -1} ),
+      WashingtonsBirthday([0,1,2,3,4], change={6: 1, 5: -1} ),
+      GoodFriday([0,1,2,3,4], change={6: 1, 5: -1} ),
+      MemorialDay([0,1,2,3,4], change={6: 1, 5: -1} ),
+      JuneteenthNationalIndependenceDay([0,1,2,3,4], change={6: 1, 5: -1} ),
+      IndependenceDay([0,1,2,3,4], change={6: 1, 5: -1} ),
+      LaborDay([0,1,2,3,4], change={6: 1, 5: -1} ),
+      Thanksgiving([0,1,2,3,4], change={6: 1, 5: -1} ),
+      Christmas([0,1,2,3,4], change={6: 1, 5: -1} )
+  ]
+
+
   @classproperty
   def weekdays(cls):
      return [0,1,2,3,4]
@@ -46,24 +60,9 @@ class NYSE(Market):
 
   @classmethod
   def fetch_past(cls, year: 'int'):
-      ss2m = {6: 1, 5: -1} # Saturday -> Friday, Sunday -> Monday
-      days = [0,1,2,3,4]
-      holidays:'list[CommonHoliday]' = [
-        NewYearsDay(days, change=ss2m),
-        MartinLutherKingJrDay(days, change=ss2m),
-        WashingtonsBirthday(days, change=ss2m),
-        GoodFriday(days, change=ss2m),
-        MemorialDay(days, change=ss2m),
-        JuneteenthNationalIndependenceDay(days, change=ss2m),
-        IndependenceDay(days, change=ss2m),
-        LaborDay(days, change=ss2m),
-        Thanksgiving(days, change=ss2m),
-        Christmas(days, change=ss2m)
-      ]
-
       yr = {}
 
-      for holiday in holidays:
+      for holiday in cls.holidays:
          d = holiday(year)
          if d is None:
             continue
