@@ -15,9 +15,11 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude="tests"),
-    install_requires=[],
+    install_requires=[
+        "better-md>=0.3.4"
+    ],
     extras_require={},
-    keywords=["python", "better holidays", "better", "market", "stocks", "finance", "holidays"],
+    keywords=["python", "better holidays", "better", "market", "stocks", "finance", "holidays", "better python"],
     classifiers= [
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
