@@ -28,5 +28,5 @@ setup(
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX :: Linux",
     ],
-    url="https://github.com/Better/better-holidays"
+    url="https://github.com/Better-Python/better-holidays"
 )
