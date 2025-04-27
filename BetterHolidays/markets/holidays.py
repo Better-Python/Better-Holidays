@@ -101,6 +101,14 @@ class WashingtonsBirthday(CommonHoliday):
         feb15 = dt.date(year, 2, 15)
         return feb15+dt.timedelta(days=next_day(feb15.weekday(), MONDAY))
 
+class LincolnsBirthday(CommonHoliday):
+    """
+    3rd Monday in February
+    """
+    name = "Lincolns Birthday"
+
+    month = 2
+    day = 12
 class GoodFriday(CommonHoliday):
     """
     See website for day

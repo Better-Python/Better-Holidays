@@ -1,7 +1,7 @@
 import BetterMD as md
 from BetterMD import elements as elm
 from .market import Market, classproperty
-from .holidays import NewYearsDay, MartinLutherKingJrDay, WashingtonsBirthday, GoodFriday, MemorialDay, JuneteenthNationalIndependenceDay, IndependenceDay, LaborDay, Thanksgiving, Christmas, CommonHoliday
+from .holidays import NewYearsDay, MartinLutherKingJrDay, WashingtonsBirthday, LincolnsBirthday, GoodFriday, MemorialDay, JuneteenthNationalIndependenceDay, IndependenceDay, LaborDay, Thanksgiving, Christmas, CommonHoliday
 from ..days import Day, Holiday, TradingDay, PartialTradingDay, NonTradingDay
 from ..const import MONTHS_MAP
 import datetime as dt
@@ -28,18 +28,59 @@ class NYSE(Market):
   include_country_holidays = True
   excluded_country_holidays = []
 
-  abnormal_days: 'dict[dt.date, Day]' = {}
-
   standard_open_time = dt.time(hour=9, minute=30)
   standard_close_time = dt.time(hour=16)
 
+  abnormal_days: 'dict[dt.date, Day]' = {
+     dt.date(1903, 2, 1): Holiday(date=dt.date(1903, 2, 1), name="Washington's Birthday"),
+     dt.date(1901, 2, 23): Holiday(date=dt.date(1901, 2, 23), name="Washington's Birthday"),
+     dt.date(1907, 2, 23): Holiday(date=dt.date(1907, 2, 23), name="Washington's Birthday"),
+     dt.date(1929, 2, 23): Holiday(date=dt.date(1909, 2, 23), name="Washington's Birthday"),
+     dt.date(1946, 2, 23): Holiday(date=dt.date(1911, 2, 23), name="Washington's Birthday"),
+  
+  
+    dt.date(2001, 9, 11): Holiday(date=dt.date(2011, 9, 11), name="9/11"),
+    dt.date(2001, 9, 12): Holiday(date=dt.date(2011, 9, 12), name="9/11"),
+    dt.date(2001, 9, 13): Holiday(date=dt.date(2011, 9, 13), name="9/11"),
+    dt.date(2001, 9, 14): Holiday(date=dt.date(2011, 9, 14), name="9/11"),
+
+    dt.date(2001, 9,17): PartialTradingDay(date=dt.date(2011, 9, 17), open_time=dt.time(hour=9, minute=30), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for 9/11"),
+  
+    dt.date(2001, 10, 8): PartialTradingDay(date=dt.date(2011, 10, 8), open_time=dt.time(hour=9, minute=31), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for Enduring Freedom Day"),
+
+    dt.date(2002, 9, 11): PartialTradingDay(date=dt.date(2002, 9, 11), open_time=dt.time(hour=12), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for 9/11"),
+  
+    dt.date(2003, 2, 20): PartialTradingDay(date=dt.date(2003, 2, 20), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for Enduring Freedom"),
+
+    dt.date(2004, 6, 7): PartialTradingDay(date=dt.date(2004, 6, 7), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for President Ronald Reagan's death"),
+    dt.date(2004, 6, 11): Holiday(date=dt.date(2004, 6, 11), name="Morning President Ronald Reagan's death"),
+  
+    dt.date(2005,6, 1): PartialTradingDay(date=dt.date(2005, 6, 1), open_time=standard_open_time, close_time=dt.time(hour=15, minute=36), late_open=True, late_open_reason="Moment of silence for President Ronald Reagan's death"),
+  
+    dt.date(2006, 12, 27): PartialTradingDay(date=dt.date(2006, 12, 27), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for President Gerald Ford'sdeath"),#
+
+    dt.date(2007, 1, 2): Holiday(date=dt.date(2007, 1, 2), name="Mourning of President Gerald Ford's death"),
+    dt.date(2012, 10, 29): Holiday(date=dt.date(2012, 10, 29), name="Hurricane Sandy"),
+    dt.date(2012, 10, 30): Holiday(date=dt.date(2012, 10, 30), name="Hurricane Sandy"),
+
+    dt.date(2018, 12, 5): Holiday(date=dt.date(2018, 12, 5), name="President George H.W. Bush's death"),
+  
+    dt.date(2025, 1, 9): Holiday(date=dt.date(2025, 1, 9), name="President Jimmy Carter's death"),
+  }
+
   holidays:'list[CommonHoliday]' = [
-      NewYearsDay([0,1,2,3,4], change={6: 1, 5: -1} ), # Saturday -> Friday, Sunday -> Monday
-      MartinLutherKingJrDay([0,1,2,3,4], change={6: 1, 5: -1} ),
-      WashingtonsBirthday([0,1,2,3,4], change={6: 1, 5: -1} ),
+      NewYearsDay([0,1,2,3,4], change={6: 1, 5: -1}, start=dt.date(1952, 9, 29) ), # Saturday -> Friday, Sunday -> Monday
+      NewYearsDay([0,1,2,3,4,5], change={6: 1}, end=dt.date(1952, 9, 28) ), # Saturday -> Friday, Sunday -> Monday
+      MartinLutherKingJrDay([0,1,2,3,4], change={6: 1, 5: -1}, start=dt.date(1998, 1, 1)),
+      WashingtonsBirthday([0,1,2,3,4], change={6: 1}, end=dt.date(1952, 9, 28)),
+      WashingtonsBirthday([0,1,2,3,4], change={6: 1, 5:-1}, start=dt.date(1952, 9, 28), end=dt.date(1963, 12, 31)),
+      WashingtonsBirthday([0,1,2,3,4], change={6: 1, 5:-1}, start=dt.date(1964, 1, 1), end=dt.date(1970, 12, 31)),
+      LincolnsBirthday([0,1,2,3,4], change={6: 1, 5: -1} ),
       GoodFriday([0,1,2,3,4], change={6: 1, 5: -1} ),
-      MemorialDay([0,1,2,3,4], change={6: 1, 5: -1} ),
-      JuneteenthNationalIndependenceDay([0,1,2,3,4], change={6: 1, 5: -1} ),
+      MemorialDay([0,1,2,3,4,5], change={6: 1}, end=dt.date(1952, 9, 28) ),
+      MemorialDay([0,1,2,3,4], change={6: 1, 5:-1}, start=dt.date(1952, 9, 28), end=dt.date(1963, 12, 31) ),
+      MemorialDay([0,1,2,3,4], change={6: 1, 5:-1}, start=dt.date(1964, 1, 1)),
+      JuneteenthNationalIndependenceDay([0,1,2,3,4], change={6: 1, 5: -1}, start=dt.date(2022, 1, 1)),
       IndependenceDay([0,1,2,3,4], change={6: 1, 5: -1} ),
       LaborDay([0,1,2,3,4], change={6: 1, 5: -1} ),
       Thanksgiving([0,1,2,3,4], change={6: 1, 5: -1} ),

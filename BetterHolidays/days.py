@@ -23,7 +23,7 @@ class NonTradingDay(Day):
     pass
 
 @dc.dataclass(frozen=True)
-class PartialTradingDay(TradingDay):
+class PartialTradingDay(TradingDay, Holiday):
     """Represents a partial trading day (early close or late open)."""
     early_close: bool = False
     late_open: bool = False
