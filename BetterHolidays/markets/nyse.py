@@ -35,14 +35,14 @@ class NYSE(Market):
      dt.date(1903, 2, 1): Holiday(date=dt.date(1903, 2, 1), name="Washington's Birthday"),
      dt.date(1901, 2, 23): Holiday(date=dt.date(1901, 2, 23), name="Washington's Birthday"),
      dt.date(1907, 2, 23): Holiday(date=dt.date(1907, 2, 23), name="Washington's Birthday"),
-     dt.date(1929, 2, 23): Holiday(date=dt.date(1909, 2, 23), name="Washington's Birthday"),
+     dt.date(1929, 2, 23): Holiday(date=dt.date(1929, 2, 23), name="Washington's Birthday"),
      dt.date(1946, 2, 23): Holiday(date=dt.date(1911, 2, 23), name="Washington's Birthday"),
   
   
-    dt.date(2001, 9, 11): Holiday(date=dt.date(2011, 9, 11), name="9/11"),
-    dt.date(2001, 9, 12): Holiday(date=dt.date(2011, 9, 12), name="9/11"),
-    dt.date(2001, 9, 13): Holiday(date=dt.date(2011, 9, 13), name="9/11"),
-    dt.date(2001, 9, 14): Holiday(date=dt.date(2011, 9, 14), name="9/11"),
+    dt.date(2001, 9, 11): Holiday(date=dt.date(2001, 9, 11), name="9/11"),
+    dt.date(2001, 9, 12): Holiday(date=dt.date(2001, 9, 12), name="9/11"),
+    dt.date(2001, 9, 13): Holiday(date=dt.date(2001, 9, 13), name="9/11"),
+    dt.date(2001, 9, 14): Holiday(date=dt.date(2001, 9, 14), name="9/11"),
 
     dt.date(2001, 9,17): PartialTradingDay(date=dt.date(2011, 9, 17), open_time=dt.time(hour=9, minute=30), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for 9/11"),
   
@@ -76,7 +76,7 @@ class NYSE(Market):
       WashingtonsBirthday([0,1,2,3,4], change={6: 1, 5:-1}, start=dt.date(1952, 9, 28), end=dt.date(1963, 12, 31)),
       WashingtonsBirthday([0,1,2,3,4], change={6: 1, 5:-1}, start=dt.date(1964, 1, 1), end=dt.date(1970, 12, 31)),
       LincolnsBirthday([0,1,2,3,4], change={6: 1, 5: -1} ),
-      GoodFriday([0,1,2,3,4], change={6: 1, 5: -1} ),
+      GoodFriday([0,1,2,3,4], change={6: 1, 5: -1}),
       MemorialDay([0,1,2,3,4,5], change={6: 1}, end=dt.date(1952, 9, 28) ),
       MemorialDay([0,1,2,3,4], change={6: 1, 5:-1}, start=dt.date(1952, 9, 28), end=dt.date(1963, 12, 31) ),
       MemorialDay([0,1,2,3,4], change={6: 1, 5:-1}, start=dt.date(1964, 1, 1)),
@@ -177,4 +177,4 @@ class NYSE(Market):
             )
           )
         else:
-          cls.cache.set(day, Day(date=day))
+          cls.cache.set(day, NonTradingDay(date=day))
