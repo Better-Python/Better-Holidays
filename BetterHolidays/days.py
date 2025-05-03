@@ -9,7 +9,7 @@ class Day:
 @dc.dataclass(frozen=True)
 class Holiday(Day):
     """Represents a full holiday (market closed)."""
-    name: str = ""  # Optional holiday name
+    name: str
 
 @dc.dataclass(frozen=True)
 class TradingDay(Day):
@@ -25,6 +25,7 @@ class NonTradingDay(Day):
 @dc.dataclass(frozen=True)
 class PartialTradingDay(TradingDay, Holiday):
     """Represents a partial trading day (early close or late open)."""
+    name: str
     early_close: bool = False
     late_open: bool = False
     early_close_reason: str = ""

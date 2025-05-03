@@ -2,6 +2,7 @@ import datetime as dt
 from ..days import Day, Holiday, PartialTradingDay
 import BetterMD as md
 from ..const import MONTHS_MAP, DAYS_TYPE, MONDAY, THURSDAY
+import re
 
 def next_day(day: 'DAYS_TYPE', want:'DAYS_TYPE') -> 'DAYS_TYPE':
     """
@@ -90,7 +91,6 @@ class MartinLutherKingJrDay(CommonHoliday):
         jan21 = dt.date(year, 1, 21)
         return jan21+dt.timedelta(days=(next_day(jan21.weekday(), MONDAY)))
 
-
 class WashingtonsBirthday(CommonHoliday):
     """
     3rd Monday in February
@@ -115,18 +115,28 @@ class GoodFriday(CommonHoliday):
     """
     name = "Good Friday"
 
-    def get_date(self, year: int) -> dt.date:
+    regex = re.compile(r"(\d+) ([a-zA-Z]+) (\d+)")
+
+    def get_date(self, year: 'int') -> 'dt.date':
         try:
-            url = f"https://www.officesimplify.com/bank-holidays-uk-{year}"
-            html = md.HTML.from_url(url)
-            elements = html.inner_html.advanced_find("td", attrs={"text": "Good Friday"})
-            if not elements:
-                raise ValueError(f"Could not find Good Friday information for {year}")
-            tr = elements[0].parent
-            day, month = tr.children[0].text.split(" ")
-            return dt.date(year, MONTHS_MAP[month], int(day[:-2]))
-        except Exception as e:  
-            raise ValueError(f"Error determining Good Friday date for {year}: {str(e)}")  
+            url = f"https://www.calendar-365.co.uk/holidays/{year}.html"
+            try:
+                html = md.HTML.from_url(url)
+            except Exception as e:
+                raise ValueError(f"Better Markdown error: {str(e)}") from e
+
+            try:
+                elements = html.inner_html.advanced_find("a", attrs={"href": f"https://www.calendar-365.co.uk/holidays/good-friday.html", "class": "link_arrow", "title": "Good Friday 2026", "text": "Good Friday"})
+                if not elements:
+                    raise ValueError(f"Could not find Good Friday information for {year}")
+            except Exception as e:
+                raise ValueError(f"Error finding Good Friday information: {str(e)}")
+
+            tr = elements[0].parent.parent
+            day, month, _ = self.regex.match(tr.children[0].text).groups()
+            return dt.date(year, MONTHS_MAP[month.upper()], int(day))
+        except Exception as e:
+            raise ValueError(f"Error determining Good Friday date for {year}: {str(e)} ({type(e)})")
 
 class MemorialDay(CommonHoliday):
     """
