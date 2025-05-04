@@ -44,20 +44,19 @@ class NYSE(Market):
     dt.date(2001, 9, 13): Holiday(date=dt.date(2001, 9, 13), name="9/11"),
     dt.date(2001, 9, 14): Holiday(date=dt.date(2001, 9, 14), name="9/11"),
 
-    dt.date(2001, 9,17): PartialTradingDay(date=dt.date(2011, 9, 17), open_time=dt.time(hour=9, minute=30), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for 9/11"),
-  
-    dt.date(2001, 10, 8): PartialTradingDay(date=dt.date(2011, 10, 8), open_time=dt.time(hour=9, minute=31), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for Enduring Freedom Day"),
+    dt.date(2001, 9, 17): PartialTradingDay(name="9/11 moment of silence", date=dt.date(2001, 9, 17), open_time=dt.time(hour=9, minute=33), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for 9/11"),
+    dt.date(2001, 10, 8): PartialTradingDay(name="Enduring Freedom", date=dt.date(2001, 10, 8), open_time=dt.time(hour=9, minute=31), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for Enduring Freedom"),
 
-    dt.date(2002, 9, 11): PartialTradingDay(date=dt.date(2002, 9, 11), open_time=dt.time(hour=12), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for 9/11"),
+    dt.date(2002, 9, 11): PartialTradingDay(name="9/11 Anniversary", date=dt.date(2002, 9, 11), open_time=dt.time(hour=12), close_time=standard_close_time, late_open=True, late_open_reason="9/11 Anniversary"),
   
-    dt.date(2003, 2, 20): PartialTradingDay(date=dt.date(2003, 2, 20), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for Enduring Freedom"),
+    dt.date(2003, 2, 20): PartialTradingDay(name="Enduring Freedom", date=dt.date(2003, 2, 20), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for Enduring Freedom"),
 
-    dt.date(2004, 6, 7): PartialTradingDay(date=dt.date(2004, 6, 7), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for President Ronald Reagan's death"),
+    dt.date(2004, 6, 7): PartialTradingDay(name="President Ronald Reagan's death", date=dt.date(2004, 6, 7), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for President Ronald Reagan's death"),
     dt.date(2004, 6, 11): Holiday(date=dt.date(2004, 6, 11), name="Morning President Ronald Reagan's death"),
-  
-    dt.date(2005,6, 1): PartialTradingDay(date=dt.date(2005, 6, 1), open_time=standard_open_time, close_time=dt.time(hour=15, minute=36), late_open=True, late_open_reason="Moment of silence for President Ronald Reagan's death"),
-  
-    dt.date(2006, 12, 27): PartialTradingDay(date=dt.date(2006, 12, 27), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for President Gerald Ford'sdeath"),#
+
+    dt.date(2005,6, 1): PartialTradingDay(name="President Ronald Reagan's death", date=dt.date(2005, 6, 1), open_time=standard_open_time, close_time=dt.time(hour=15, minute=36), early_close=True, early_close_reason="Moment of silence for President Ronald Reagan's death"),
+
+    dt.date(2006, 12, 27): PartialTradingDay(name="President Gerald Ford's death", date=dt.date(2006, 12, 27), open_time=dt.time(hour=9, minute=32), close_time=standard_close_time, late_open=True, late_open_reason="Moment of silence for President Gerald Ford's death"),#
 
     dt.date(2007, 1, 2): Holiday(date=dt.date(2007, 1, 2), name="Mourning of President Gerald Ford's death"),
     dt.date(2012, 10, 29): Holiday(date=dt.date(2012, 10, 29), name="Hurricane Sandy"),
@@ -128,7 +127,7 @@ class NYSE(Market):
         return TradingDay
      else:
         return NonTradingDay
-  
+
   @classmethod
   def fetch_future(cls):
     doc = md.HTML.from_url("https://www.nyse.com/markets/hours-calendars")
@@ -153,6 +152,7 @@ class NYSE(Market):
               day,
               PartialTradingDay(
                 date=day,
+                name=name.removesuffix("*"),
                 open_time=dt.time(hour=9, minute=30),
                 close_time=dt.time(hour=13),
                 early_close=True,
