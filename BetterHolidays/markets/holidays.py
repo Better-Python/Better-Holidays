@@ -126,7 +126,7 @@ class GoodFriday(CommonHoliday):
                 raise ValueError(f"Better Markdown error: {str(e)}") from e
 
             try:
-                elements = html.inner_html.advanced_find("a", attrs={"href": f"https://www.calendar-365.co.uk/holidays/good-friday.html", "class": "link_arrow", "title": "Good Friday 2026", "text": "Good Friday"})
+                elements = html.inner_html.advanced_find("a", attrs={"href": "https://www.calendar-365.co.uk/holidays/good-friday.html", "class": "link_arrow", "title": "Good Friday 2026", "text": "Good Friday"}) # The title is 'Good Friday 2026' for all years
                 if not elements:
                     raise ValueError(f"Could not find Good Friday information for {year}")
             except Exception as e:
