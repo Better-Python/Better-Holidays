@@ -1,4 +1,3 @@
-from .markets import MARKETS, Market
 import functools as ft
 import datetime as dt
 from .typing import ClassMethod
@@ -13,21 +12,6 @@ NOT_SET = type("NOT_SET", (object,), {})
 
 def not_set(type_: str, attr: str):
     raise AttributeError(f"Can't {type_} attribute {attr}")
-
-@t.overload
-def get_market(name:'str') -> 'type[Market]': ...
-
-@t.overload
-def get_market(name:'str', default:'T2') -> 't.Union[T2, type[Market]]': ...
-
-def get_market(name, default=NOT_SET):
-    if name in MARKETS:
-        return MARKETS[name]
-    
-    if default == NOT_SET:
-        raise KeyError(name)
-    
-    return default
 
 def method_cache(cache_method: t.Callable[[], T1]):
     def wrapper(func: t.Callable[[T], T1]):

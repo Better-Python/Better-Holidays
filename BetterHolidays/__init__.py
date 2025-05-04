@@ -1,6 +1,6 @@
 from .days import Day, Holiday, TradingDay, PartialTradingDay, NonTradingDay
-from .markets import MARKETS, NYSE, Market
-from .utils import get_market
+from .multi import get_market
+from .markets import Market, NYSE, MARKETS
 
 __all__ = [
     "Day",
