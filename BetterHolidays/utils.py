@@ -55,4 +55,7 @@ def iterate_date(start: 'dt.date', end: 'dt.date'):
         yield current
         current += dt.timedelta(days=1)
 
-
+def iter_year(year: int):
+    start = dt.date(year, 1, 1)
+    end = dt.date(year, 12, 31)
+    return iterate_date(start, end)

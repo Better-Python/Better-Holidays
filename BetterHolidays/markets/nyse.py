@@ -4,6 +4,7 @@ from .market import Market, classproperty
 from .holidays import NewYearsDay, MartinLutherKingJrDay, WashingtonsBirthday, LincolnsBirthday, GoodFriday, MemorialDay, JuneteenthNationalIndependenceDay, IndependenceDay, LaborDay, Thanksgiving, Christmas, CommonHoliday
 from ..days import Day, Holiday, TradingDay, PartialTradingDay, NonTradingDay
 from ..const import MONTHS_MAP
+from ..utils import iter_year
 import datetime as dt
 
 # Standard open/close times = 9:30 - 4:00
@@ -11,16 +12,6 @@ import datetime as dt
 # ** Closes at 1pm
 # *** Closes at 1pm
 
-def iter_days(start: dt.date, end: dt.date):
-    current = start
-    while current <= end:
-        yield current
-        current += dt.timedelta(days=1)
-
-def iter_year(year: int):
-    start = dt.date(year, 1, 1)
-    end = dt.date(year, 12, 31)
-    return iter_days(start, end)
 
 class NYSE(Market):
   name = "NYSE"

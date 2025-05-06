@@ -48,7 +48,7 @@ class Market(ABC):
     @abstractmethod
     def fetch_data(cls, year: 'int'):
         """
-        Fetch data between start and end dates.
+        Fetch data for a given year.
         Must be implemented by subclasses.
         """
         ...
