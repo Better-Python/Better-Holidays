@@ -2,7 +2,7 @@ from .market import Market
 import datetime as dt
 from ..days import Holiday, TradingDay, NonTradingDay
 from ..const import MONTHS_MAP
-from ..utils import iter_year
+from ..utils import iter_year, classproperty
 import BetterMD as md
 import re
 

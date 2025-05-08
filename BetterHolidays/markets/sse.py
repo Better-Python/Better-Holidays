@@ -1,14 +1,20 @@
 from .market import Market
 import datetime as dt
-from ..days import Holiday
-from ..const import MONTHS_MAP
-import BetterMD as md
 import zoneinfo as zi
-from .holidays import ChineseNewYearsDay, NewYearsDay, QingMingFestival, ChineseLabourDay, DragonBoatFestival, ChineseNationalDay, AutumnFestival
+from ..utils import classproperty
+from .holidays import (
+    ChineseNewYearsDay,
+    NewYearsDay,
+    QingMingFestival,
+    ChineseLabourDay,
+    DragonBoatFestival,
+    ChineseNationalDay,
+    AutumnFestival,
+)
 
 
 class SSE(Market):
-    name = "Shanghi Stock Exchange"
+    name = "Shanghai Stock Exchange"
     country = "China"
     include_country_holidays = True
     excluded_country_holidays = []

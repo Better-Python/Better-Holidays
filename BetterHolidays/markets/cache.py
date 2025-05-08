@@ -10,30 +10,31 @@ DB = get_db()
 
 
 class Cache:
-    def __init__(self, market:'str'):
+    def __init__(self, market: "str"):
         self.market = market
 
     def get(self, key: "dt.date") -> "Day":
-        return Day.select().where(Day.date == key, Day.market == self.market).get()
+        selection = Day.select().where(Day.date == key, Day.market == self.market)
+        print(selection)
+        return selection.get()
 
     def set(self, day: "Day"):
-        day.market.db_value(self.market)
+        day.market = self.market
         day.save()
 
     def get_or_set(self, key: "dt.date", func: "t.Callable[[int], None]") -> "Day":
         try:
             return self.get(key)
-        except pw.DoesNotExist:
+        except Exception:
             func(key.year)
 
         try:
             return self.get(key)
-        except pw.DoesNotExist:
+        except Exception:
             raise ValueError(f"Could not find day {key} after fetching data")
 
     def clear(self):
         Day.delete().where(Day.market == self.market).execute()
-
 
     @t.overload
     def pop(self, key: "dt.date") -> "Day": ...
@@ -42,27 +43,19 @@ class Cache:
     def pop(self, key: "dt.date", default: "T") -> "t.Union[Day, T]": ...
 
     def pop(self, key, default=NOT_SET):
+        query = Day.select().where(Day.market == self.market, Day.date == key)
         try:
-            if default == NOT_SET:
-                try:
-                    item = Day.select().where(Day.market == self.market, Day.date == key).get()
-                    if item:
-                        item.delete_instance()
-                        return item
-                except:
-                    raise KeyError(key)
+            item = query.get()
+        except pw.DoesNotExist:
+            if default is NOT_SET:
+                raise KeyError(key) from None
+            return default
 
-            try:
-                item = Day.select().where(Day.market == self.market, Day.date == key).get()
-                if item:
-                    return item
-            except:
-                return default
-
-        except KeyError:
-            raise
-        except Exception as e:
-            raise KeyError(key)
+        if default is NOT_SET:
+            item.delete_instance(recursive=False)
+        return item
 
     def __contains__(self, key: "dt.date") -> bool:
-        return key in Day.select().where(Day.market == self.market, Day.date == key).get()
+        return (
+            key in Day.select().where(Day.market == self.market, Day.date == key).get()
+        )

@@ -1,7 +1,6 @@
 import peewee as pw
 from . import utils
 
-
 class Day(pw.Model):
     """Base class representing a calendar day."""
 
@@ -26,7 +25,6 @@ class TradingDay(Day):
 
 class NonTradingDay(Day):
     """Represents a non-trading day (e.g. weekends)."""
-
     pass
 
 
@@ -37,3 +35,5 @@ class PartialTradingDay(TradingDay, Holiday):
     late_open = pw.BooleanField(default=False)
     early_close_reason = pw.CharField(default="")
     late_open_reason = pw.CharField(default="")
+
+utils.get_db().create_tables([Day, Holiday, TradingDay, NonTradingDay, PartialTradingDay])

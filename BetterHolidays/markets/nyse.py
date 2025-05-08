@@ -192,11 +192,11 @@ class NYSE(Market):
         return super().fetch_data(year)
 
     @classmethod
-    def get_day_type(cls, day: dt.date) -> 'type[Day]':
+    def get_day_type(cls, day: dt.date) -> "type[Day]":
         if day in cls.abnormal_days:
             return type(cls.abnormal_days[day])
 
-        elif day in cls.weekdays:
+        elif day.weekday() in cls.weekdays:
             return TradingDay
 
         else:
@@ -212,16 +212,17 @@ class NYSE(Market):
 
         for year, dates in table_dict.items():
 
-            def handle_date(date: "str"):
+            def handle_date(date: "str", year: "int"):
                 split_date = date.split(" ")
 
                 return dt.date(
-                    int(year),
+                    year,
                     int(MONTHS_MAP[split_date[1].upper()]),
                     int(split_date[2].replace("*", "")),
                 )
 
-            hol_dates = {handle_date(date): hol for date, hol in zip(dates, holidays)}
+            year = int(year)
+            hol_dates = {handle_date(date, year): hol for date, hol in zip(dates, holidays)}
 
             for day in iter_year(int(year)):
                 if day in hol_dates:

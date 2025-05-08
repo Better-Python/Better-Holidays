@@ -21,39 +21,42 @@ def next_day(day: "DAYS_TYPE", want: "DAYS_TYPE") -> "DAYS_TYPE":
         return (7 - day) + want
     return want - day
 
+
 def last_day(day: "DAYS_TYPE", want: "DAYS_TYPE") -> "DAYS_TYPE":
     """
     Args:
         day: current day
         want: day to get
-    
+
     Returns:
         days until want
     """
     return next_day(day, want)
 
+
 def next_weekend(day: "DAYS_TYPE") -> "DAYS_TYPE":
     """
     Args:
         day: current day
-    
+
     Returns:
         days until want
     """
-    if day in [5,6]:
-        return min(next_day(day+1, 5), next_day(day+1, 6)) + 1
+    if day in [5, 6]:
+        return min(next_day(day + 1, 5), next_day(day + 1, 6)) + 1
     return next_day(day, 5)
+
 
 def last_weekend(day: "DAYS_TYPE") -> "DAYS_TYPE":
     """
     Args:
         day: current day
-    
+
     Returns:
         days until want
     """
-    if day in [5,6]:
-        return min(last_day(day-1, 5), last_day(day-1, 6)) - 1
+    if day in [5, 6]:
+        return min(last_day(day - 1, 5), last_day(day - 1, 6)) - 1
     return last_day(day, 6)
 
 class CommonHoliday:
@@ -85,7 +88,7 @@ class CommonHoliday:
         self.start = start
         self.end = end
 
-    def get_date(self, year: "int") -> 't.Union[dt.date, list[dt.date]]':
+    def get_date(self, year: "int") -> "t.Union[dt.date, list[dt.date]]":
         return dt.date(year, self.month, self.day)
 
     def __call__(self, year: "int"):
@@ -125,7 +128,6 @@ class CommonHoliday:
             return [for_day(d) for d in day]
         return for_day(day)
 
-
 class ConsistentAbnormalDay(CommonHoliday):
     def __init__(
         self,
@@ -160,68 +162,127 @@ class NewYearsDay(CommonHoliday):
     month = 1
     day = 1
 
-def get_date_from_timeanddate(td:'md.elements.Td', year:"int") -> 'dt.date':
+
+def get_date_from_timeanddate(td: "md.elements.Td", year: "int") -> "dt.date":
     table = td.table
     table_td = table.parent
-    table_row:'md.elements.Tr' = table_td.parent
-    table_body: 'md.elements.TBody' = table_row.parent
-    header_row:'md.elements.Tr' = table_body.children[table_body.children.index(table_row)-1]
-    header_td: 'md.elements.Td' = header_row.children[table_row.index(table_td)]
+    table_row: "md.elements.Tr" = table_td.parent
+    table_body: "md.elements.TBody" = table_row.parent
+    header_row: "md.elements.Tr" = table_body.children[
+        table_body.children.index(table_row) - 1
+    ]
+    header_td: "md.elements.Td" = header_row.children[table_row.index(table_td)]
     month = MONTHS_MAP[header_td.text.strip().upper()]
     day = int(td.text.strip())
     return dt.date(year, month, day)
 
-
 class ChineseNewYearsDay(CommonHoliday):
     name = "Chinese New Year's Day"
 
-    def get_date(self, year: "int") -> 'list[dt.date]':
-        page = md.HTML.from_url(f"https://www.timeanddate.com/calendar/?year={year}&country=41")
-        cny = [get_date_from_timeanddate(td, year) for td in page.inner_html.get_by_attr("title", "Chinese New Year")]
-        return flatten_list([cny[0] - dt.timedelta(last_day(cny[0].weekday(), SUNDAY)), cny, cny[-1]+dt.timedelta(days=next_weekend(cny[-1].weekday()))])
+    def get_date(self, year: "int") -> "list[dt.date]":
+        page = md.HTML.from_url(
+            f"https://www.timeanddate.com/calendar/?year={year}&country=41"
+        )
+        print(page)
+        print(len(page))
+        page = page[1]
+        cny = [
+            get_date_from_timeanddate(td, year)
+            for td in page.inner_html.get_by_attr("title", "Chinese New Year")
+        ]
+        return flatten_list(
+            [
+                cny[0] - dt.timedelta(last_day(cny[0].weekday(), SUNDAY)),
+                cny,
+                cny[-1] + dt.timedelta(days=next_weekend(cny[-1].weekday())),
+            ]
+        )
+
 
 class ChineseNationalDay(CommonHoliday):
     name = "Chinese National Day"
 
-    def get_date(self, year: int) -> dt.date | list[date]:
-        page = md.HTML.from_url(f"https://www.timeanddate.com/calendar/?year={year}&country=41")
+    def get_date(self, year: int) -> 'dt.date | list[dt.date]':
+        page = md.HTML.from_url(
+            f"https://www.timeanddate.com/calendar/?year={year}&country=41"
+        )
         cnd = page.inner_html.get_by_attr("title", "Chinese National Day")[0]
-        cndw = [get_date_from_timeanddate(td, year) for td in page.inner_html.get_by_attr("title", "National Day Golden Week holiday")]
+        cndw = [
+            get_date_from_timeanddate(td, year)
+            for td in page.inner_html.get_by_attr(
+                "title", "National Day Golden Week holiday"
+            )
+        ]
 
-        return flatten_list([cnd - dt.timedelta(last_weekend(cnd.weekday())), cnd, cndw, cndw[-1]+dt.timedelta(days=next_weekend(cndw[-1].weekday()))])
+        return flatten_list(
+            [
+                cnd - dt.timedelta(last_weekend(cnd.weekday())),
+                cnd,
+                cndw,
+                cndw[-1] + dt.timedelta(days=next_weekend(cndw[-1].weekday())),
+            ]
+        )
+
 
 class QingMingFestival(CommonHoliday):
     name = "Qing Ming Jie Festival"
 
-    def get_date(self, year: "int") -> 'list[dt.date]':
-        page = md.HTML.from_url(f"https://www.timeanddate.com/calendar/?year={year}&country=41")
-        qmf = [get_date_from_timeanddate(td, year) for td in page.inner_html.get_by_attr("title", "Qing Ming Jie holiday")]
-        return flatten_list([qmf, qmf[-1]+dt.timedelta(days=next_weekend(qmf[-1].weekday()))])
+    def get_date(self, year: "int") -> "list[dt.date]":
+        page = md.HTML.from_url(
+            f"https://www.timeanddate.com/calendar/?year={year}&country=41"
+        )
+        qmf = [
+            get_date_from_timeanddate(td, year)
+            for td in page.inner_html.get_by_attr("title", "Qing Ming Jie holiday")
+        ]
+        return flatten_list(
+            [qmf, qmf[-1] + dt.timedelta(days=next_weekend(qmf[-1].weekday()))]
+        )
+
 
 class ChineseLabourDay(CommonHoliday):
     name = "Chinese Labour Day"
 
-    def get_date(self, year: "int") -> 'list[dt.date]':
+    def get_date(self, year: "int") -> "list[dt.date]":
         may1 = dt.date(year, 5, 1)
-        return [may1-dt.timedelta(days=last_weekend(may1.weekday())), may1, dt.date(year, 5, 2), dt.date(year, 5, 3), dt.date(year, 5, 4), dt.date(year, 5, 5)]
+        return [
+            may1 - dt.timedelta(days=last_weekend(may1.weekday())),
+            may1,
+            dt.date(year, 5, 2),
+            dt.date(year, 5, 3),
+            dt.date(year, 5, 4),
+            dt.date(year, 5, 5),
+        ]
 
 class DragonBoatFestival(CommonHoliday):
     name = "Dragon Boat Festival"
 
-    def get_date(self, year: "int") -> 'list[dt.date]':
-        page = md.HTML.from_url(f"https://www.timeanddate.com/calendar/?year={year}&country=41")
-        dbf = [get_date_from_timeanddate(td, year) for td in page.inner_html.get_by_attr("title", "Dragon Boat Festival")]
+    def get_date(self, year: "int") -> "list[dt.date]":
+        page = md.HTML.from_url(
+            f"https://www.timeanddate.com/calendar/?year={year}&country=41"
+        )
+        dbf = [
+            get_date_from_timeanddate(td, year)
+            for td in page.inner_html.get_by_attr("title", "Dragon Boat Festival")
+        ]
 
         return dbf
+
 
 class AutumnFestival(CommonHoliday):
     name = "Autumn Festival"
 
-    def get_date(self, year: "int") -> 'list[dt.date]':
-        page = md.HTML.from_url(f"https://www.timeanddate.com/calendar/?year={year}&country=41")
-        af = [get_date_from_timeanddate(td, year) for td in page.inner_html.get_by_attr("title", "Autumn Festival")]
+    def get_date(self, year: "int") -> "list[dt.date]":
+        page = md.HTML.from_url(
+            f"https://www.timeanddate.com/calendar/?year={year}&country=41"
+        )
+        af = [
+            get_date_from_timeanddate(td, year)
+            for td in page.inner_html.get_by_attr("title", "Autumn Festival")
+        ]
         af.insert(0, af[0] - dt.timedelta(last_weekend(af[0].weekday())))
         return af
+
 
 class MartinLutherKingJrDay(CommonHoliday):
     """

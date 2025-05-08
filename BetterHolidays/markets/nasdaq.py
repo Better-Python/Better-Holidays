@@ -1,13 +1,12 @@
 import datetime as dt
 from ..days import Day, Holiday, TradingDay, PartialTradingDay, NonTradingDay
 from ..const import MONTHS_MAP
-from ..utils import iter_year
+from ..utils import iter_year, classproperty
 from .market import Market
 from .holidays import (
     NewYearsDay,
     MartinLutherKingJrDay,
     WashingtonsBirthday,
-    LincolnsBirthday,
     GoodFriday,
     MemorialDay,
     JuneteenthNationalIndependenceDay,
@@ -42,51 +41,51 @@ class NASDAQ(Market):
         MemorialDay([0, 1, 2, 3, 4, 5], change={6: 1}),
         JuneteenthNationalIndependenceDay([0, 1, 2, 3, 4], change={6: 1, 5: -1}),
         ConsistentAbnormalDay(
-          "Independence Day",
-          [0, 1, 2, 3, 4],
-          change={6: 1, 5: -1},
-          month=7,
-          day=3,
-          type=PartialTradingDay,
-          open_time=dt.time(hour=9, minute=30),
-          close_time=dt.time(hour=13),
-          early_close=True,
-          late_open=True,
-          holiday_reason="Independence Day",
+            "Independence Day",
+            [0, 1, 2, 3, 4],
+            change={6: 1, 5: -1},
+            month=7,
+            day=3,
+            type=PartialTradingDay,
+            open_time=dt.time(hour=9, minute=30),
+            close_time=dt.time(hour=13),
+            early_close=True,
+            late_open=True,
+            holiday_reason="Independence Day",
         ),
         IndependenceDay([0, 1, 2, 3, 4], change={6: 1, 5: -1}),
         LaborDay([0, 1, 2, 3, 4], change={6: 1, 5: -1}),
         Thanksgiving([0, 1, 2, 3, 4], change={6: 1, 5: -1}),
         ConsistentAbnormalDay(
-          "Thanksgiving",
-          [0, 1, 2, 3, 4],
-          change={6: 1, 5: -1},
-          month=11,
-          day=27,
-          type=PartialTradingDay,
-          open_time=dt.time(hour=9, minute=30),
-          close_time=dt.time(hour=13),
-          early_close=True,
-          late_open=True,
-          holiday_reason="Thanksgiving",
+            "Thanksgiving",
+            [0, 1, 2, 3, 4],
+            change={6: 1, 5: -1},
+            month=11,
+            day=27,
+            type=PartialTradingDay,
+            open_time=dt.time(hour=9, minute=30),
+            close_time=dt.time(hour=13),
+            early_close=True,
+            late_open=True,
+            holiday_reason="Thanksgiving",
         ),
         ConsistentAbnormalDay(
-          "Christmas",
-          [0, 1, 2, 3, 4],
-          change={6: 1, 5: -1},
-          month=12,
-          day=24,
-          type=PartialTradingDay,
-          open_time=dt.time(hour=9, minute=30),
-          close_time=dt.time(hour=13),
-          early_close=True,
-          late_open=True,
-          holiday_reason="Christmas",
+            "Christmas",
+            [0, 1, 2, 3, 4],
+            change={6: 1, 5: -1},
+            month=12,
+            day=24,
+            type=PartialTradingDay,
+            open_time=dt.time(hour=9, minute=30),
+            close_time=dt.time(hour=13),
+            early_close=True,
+            late_open=True,
+            holiday_reason="Christmas",
         ),
         Christmas([0, 1, 2, 3, 4], change={6: 1, 5: -1}),
     ]
 
-    @property
+    @classproperty
     def weekdays(cls):
         return [0, 1, 2, 3, 4]
 
@@ -118,7 +117,7 @@ class NASDAQ(Market):
             )
 
             month, date = day.split(" ")
-            date = dt.date(year, MONTHS_MAP[month.upper()], int(date))
+            date = dt.date(dt.date.today().year, MONTHS_MAP[month.upper()], int(date))
 
             if status == "Closed":
                 holidays[date] = Holiday(date=date, name=name)
@@ -145,7 +144,7 @@ class NASDAQ(Market):
             else:
                 holidays[date] = Holiday(date=date, name=name)
 
-        for day in iter_year(year):
+        for day in iter_year(dt.date.today().year):
             if day in holidays:
                 cls.cache.set(holidays[day])
             elif day.weekday() in cls.weekdays:
