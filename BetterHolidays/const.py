@@ -1,18 +1,10 @@
 import typing as t
 
-DAYS = (
-    "MONDAY",
-    "TUESDAY",
-    "WEDNESDAY",
-    "THURSDAY",
-    "FRIDAY",
-    "SATURDAY",
-    "SUNDAY"
-)
+DAYS = ("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY")
 
 DAYS_MAP = {day: i for i, day in enumerate(DAYS)}
-MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY = 0,1,2,3,4,5,6
-DAYS_TYPE = t.Literal[0,1,2,3,4,5,6]
+MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY = 0, 1, 2, 3, 4, 5, 6
+DAYS_TYPE = t.Literal[0, 1, 2, 3, 4, 5, 6]
 
 MONTHS = (
     "JANUARY",
@@ -26,11 +18,24 @@ MONTHS = (
     "SEPTEMBER",
     "OCTOBER",
     "NOVEMBER",
-    "DECEMBER"
+    "DECEMBER",
 )
 MONTHS_MAP = {month: i for i, month in enumerate(MONTHS, 1)}
 
-JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER = range(1, 13)
+(
+    JANUARY,
+    FEBRUARY,
+    MARCH,
+    APRIL,
+    MAY,
+    JUNE,
+    JULY,
+    AUGUST,
+    SEPTEMBER,
+    OCTOBER,
+    NOVEMBER,
+    DECEMBER,
+) = range(1, 13)
 
 
 DAYS_IN_MONTH = {
@@ -45,6 +50,5 @@ DAYS_IN_MONTH = {
     "SEPTEMBER": 30,
     "OCTOBER": 31,
     "NOVEMBER": 30,
-    "DECEMBER": 31
+    "DECEMBER": 31,
 }
-
