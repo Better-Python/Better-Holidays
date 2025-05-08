@@ -1,42 +1,68 @@
 import datetime as dt
 import typing as t
 from ..days import Day
-from ..utils import NOT_SET
+from ..utils import NOT_SET, get_db
+import peewee as pw
 
 T = t.TypeVar("T")
 
+DB = get_db()
+
+
 class Cache:
-    def __init__(self):
-        self.cache: 'dict[dt.date, Day]' = {}
+    def __init__(self, market:'str'):
+        self.market = market
 
-    def get(self, key: 'dt.date') -> 't.Optional[Day]':
-        return self.cache.get(key)
+    def get(self, key: "dt.date") -> "Day":
+        return Day.select().where(Day.date == key, Day.market == self.market).get()
 
-    def set(self, key: 'dt.date', value: 'Day'):
-        self.cache[key] = value
+    def set(self, day: "Day"):
+        day.market.db_value(self.market)
+        day.save()
 
-    def get_or_set(self, key: 'dt.date', func: 't.Callable[[int], None]') -> 'Day':
-        if key in self.cache:
+    def get_or_set(self, key: "dt.date", func: "t.Callable[[int], None]") -> "Day":
+        try:
             return self.get(key)
-        func(key.year)
-        if key in self.cache:
+        except pw.DoesNotExist:
+            func(key.year)
+
+        try:
             return self.get(key)
-        raise ValueError("Cache miss")
+        except pw.DoesNotExist:
+            raise ValueError(f"Could not find day {key} after fetching data")
 
     def clear(self):
-        self.cache.clear()
+        Day.delete().where(Day.market == self.market).execute()
+
 
     @t.overload
-    def pop(self, key:'dt.date') -> 'Day': ...
+    def pop(self, key: "dt.date") -> "Day": ...
 
     @t.overload
-    def pop(self, key:'dt.date', default:'T') -> 't.Union[Day, T]': ...
+    def pop(self, key: "dt.date", default: "T") -> "t.Union[Day, T]": ...
 
     def pop(self, key, default=NOT_SET):
-        if default == NOT_SET:     
-            return self.cache.pop(key)
+        try:
+            if default == NOT_SET:
+                try:
+                    item = Day.select().where(Day.market == self.market, Day.date == key).get()
+                    if item:
+                        item.delete_instance()
+                        return item
+                except:
+                    raise KeyError(key)
 
-        return self.cache.pop(key, default)
+            try:
+                item = Day.select().where(Day.market == self.market, Day.date == key).get()
+                if item:
+                    return item
+            except:
+                return default
 
-    def __contains__(self, key: 'dt.date') -> bool:
-        return key in self.cache
+        except KeyError:
+            raise
+        except Exception as e:
+            raise KeyError(key)
+
+    def __contains__(self, key: "dt.date") -> bool:
+        return key in Day.select().where(Day.market == self.market, Day.date == key).get()

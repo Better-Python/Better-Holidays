@@ -16,7 +16,8 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(exclude="tests"),
     install_requires=[
-        "better-md>=0.3.4"
+        "better-md>=0.3.4",
+        "platformdirs>=4.0.0",
     ],
     extras_require={},
     keywords=["python", "better holidays", "better", "market", "stocks", "finance", "holidays", "better python"],
